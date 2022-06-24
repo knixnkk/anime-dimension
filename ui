@@ -1,5 +1,27 @@
 local Luxt1 = {}
-
+_G.Settings = {
+    keybind = "";
+}
+local filename = "KNIXNKK_UI.json";
+function saveSettings()
+    local json;
+    local HttpService = game:GetService("HttpService");
+    if (writefile) then
+        json = HttpService:JSONEncode(_G.Settings);
+        writefile(filename,json)
+    else
+        print(' -- CANNOT SAVE CONFIG FILE -- ')
+    end   
+end
+function loadSettings()
+    local HttpService = game:GetService("HttpService");
+    if (readfile and isfile and isfile(filename)) then
+        _G.Settings = HttpService:JSONDecode(readfile(filename));
+    else
+        saveSettings()
+    end
+end
+loadSettings()
 function Luxt1.CreateWindow(libName, logoId)
     local LuxtLib = Instance.new("ScreenGui")
     local shadow = Instance.new("ImageLabel")
@@ -42,12 +64,13 @@ function Luxt1.CreateWindow(libName, logoId)
         if a.KeyCode.Name ~= "Unknown" then
             key1.Text = a.KeyCode.Name
             oldKey = a.KeyCode.Name;
+            saveSettings()
         end
     end)
 
     game:GetService("UserInputService").InputBegan:connect(function(current, ok) 
         if not ok then 
-            if current.KeyCode.Name == oldKey then 
+            if tostring(_G.Settings.keybind) == oldKey then 
                 if LuxtLib.Enabled == true then
                     LuxtLib.Enabled = false
                 else
